@@ -7,8 +7,10 @@ import '../services/storage_service.dart';
 import '../services/notification_service.dart';
 
 class AddDeadlinePage extends StatefulWidget {
+  const AddDeadlinePage({Key? key}) : super(key: key);
+
   @override
-  _AddDeadlinePageState createState() => _AddDeadlinePageState();
+  State<AddDeadlinePage> createState() => _AddDeadlinePageState();
 }
 
 class _AddDeadlinePageState extends State<AddDeadlinePage> {
@@ -72,7 +74,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 decoration: InputDecoration(labelText: 'Descrição (ex: RG de 2ª via)'),
                 validator: (v) => (v==null || v.trim().isEmpty) ? 'Informe uma descrição' : null,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _category,
                 items: ['RG','CNH','Carteirinha'].map((c) =>
@@ -80,21 +82,21 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 onChanged: (v) { if (v!=null) setState(()=>_category=v); },
                 decoration: InputDecoration(labelText: 'Categoria'),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
                 children: [
-                  Expanded(child: Text('Data: ${DateFormat.yMMMMd().format(_selected)}', style: TextStyle(color: AppColors.onSlate))),
-                  TextButton(onPressed: _pickDate, child: Text('Escolher'))
+                  Expanded(child: Text('Data: ${DateFormat.yMMMMd().format(_selected)}', style: const TextStyle(color: AppColors.onSlate))),
+                  TextButton(onPressed: _pickDate, child: const Text('Escolher'))
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.amber,
                   foregroundColor: AppColors.slate,
                 ),
                 onPressed: _save,
-                child: Text('Salvar prazo'),
+                child: const Text('Salvar prazo'),
               ),
             ],
           ),

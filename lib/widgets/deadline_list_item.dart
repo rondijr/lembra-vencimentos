@@ -7,23 +7,20 @@ class DeadlineListItem extends StatelessWidget {
   final Deadline deadline;
   final VoidCallback onDelete;
 
-  const DeadlineListItem({
-    required this.deadline,
-    required this.onDelete,
-  });
+  const DeadlineListItem({Key? key, required this.deadline, required this.onDelete}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final dateStr = DateFormat.yMMMd().format(deadline.date);
     return Card(
       color: Colors.white10,
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
-        leading: Icon(Icons.calendar_month, color: AppColors.blue),
-        title: Text(deadline.title, style: TextStyle(color: AppColors.onSlate)),
-        subtitle: Text('${deadline.category}  $dateStr', style: TextStyle(color: AppColors.onSlate.withOpacity(0.9))),
+        leading: const Icon(Icons.calendar_month, color: AppColors.blue),
+        title: Text(deadline.title, style: const TextStyle(color: AppColors.onSlate)),
+        subtitle: Text('${deadline.category}  $dateStr', style: const TextStyle(color: Color.fromRGBO(255,255,255,0.9))),
         trailing: IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent),
+          icon: const Icon(Icons.delete, color: Colors.redAccent),
           onPressed: onDelete,
         ),
       ),

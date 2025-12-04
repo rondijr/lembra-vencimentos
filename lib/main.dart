@@ -6,10 +6,12 @@ import 'services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init(); // inicializa notificações locais
-  runApp(LembraVencimentosApp());
+  runApp(const LembraVencimentosApp());
 }
 
 class LembraVencimentosApp extends StatelessWidget {
+  const LembraVencimentosApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,7 +23,7 @@ class LembraVencimentosApp extends StatelessWidget {
             .copyWith(secondary: AppColors.amber),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

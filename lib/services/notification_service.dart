@@ -14,7 +14,7 @@ class NotificationService {
     tz.initializeTimeZones();
 
     final android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    final darwin = DarwinInitializationSettings(
+    final darwin = const DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,

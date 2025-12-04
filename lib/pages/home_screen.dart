@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+// removed unused import
 import '../utils/app_colors.dart';
 import '../models/deadline.dart';
 import '../services/storage_service.dart';
@@ -7,6 +7,8 @@ import 'add_deadline_page.dart';
 import '../widgets/deadline_list_item.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -42,17 +44,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lembra Vencimentos'),
+        title: const Text('Lembra Vencimentos'),
         backgroundColor: AppColors.blue,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onAdd,
         backgroundColor: AppColors.amber,
-        child: Icon(Icons.add, color: AppColors.slate),
+        child: const Icon(Icons.add),
       ),
       body: _items.isEmpty
           ? Center(
-              child: Text(
+              child: const Text(
                 'Nenhum prazo. Toque em + para cadastrar o 1º prazo.',
                 style: TextStyle(color: AppColors.onSlate),
                 textAlign: TextAlign.center,
