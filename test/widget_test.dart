@@ -12,7 +12,7 @@ import 'package:lembra_vencimentos/main.dart';
 void main() {
   testWidgets('App starts and shows title', (WidgetTester tester) async {
     // Build the app and trigger a frame.
-    await tester.pumpWidget(LembraVencimentosApp());
+      await tester.pumpWidget(const LembraVencimentosApp(isFirstRun: false));
 
     // Verify the app bar title is present.
     expect(find.text('Lembra Vencimentos'), findsOneWidget);

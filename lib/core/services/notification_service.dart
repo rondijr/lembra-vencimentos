@@ -13,14 +13,14 @@ class NotificationService {
   Future<void> init() async {
     tz.initializeTimeZones();
 
-    final android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    final darwin = const DarwinInitializationSettings(
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const darwin = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    final settings = InitializationSettings(android: android, iOS: darwin, macOS: darwin);
+    const settings = InitializationSettings(android: android, iOS: darwin, macOS: darwin);
     await _plugin.initialize(settings);
   }
 
@@ -30,7 +30,7 @@ class NotificationService {
     required String body,
     required DateTime scheduledDate,
   }) async {
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       'deadline_channel',
       'Prazos',
       channelDescription: 'Notificações de prazos',
@@ -39,14 +39,14 @@ class NotificationService {
       color: Color(0xFF2563EB),
     );
 
-    final darwinDetails = DarwinNotificationDetails();
+    const darwinDetails = DarwinNotificationDetails();
 
     await _plugin.zonedSchedule(
       id,
       title,
       body,
       tz.TZDateTime.from(scheduledDate, tz.local),
-      NotificationDetails(android: androidDetails, iOS: darwinDetails, macOS: darwinDetails),
+      const NotificationDetails(android: androidDetails, iOS: darwinDetails, macOS: darwinDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: null,
