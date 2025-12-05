@@ -1,9 +1,10 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'core/utils/app_colors.dart';
 import 'core/config/supabase_config.dart';
+import 'core/utils/theme_provider.dart';
 import 'features/deadlines/presentation/pages/home_screen.dart';
 import 'features/deadlines/presentation/pages/profile_page.dart';
 import 'features/deadlines/presentation/pages/settings_page.dart';
@@ -37,7 +38,12 @@ void main() async {
     initialRoute = hasAcceptedTerms ? '/home' : '/terms';
   }
   
-  runApp(LembraVencimentosApp(initialRoute: initialRoute));
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: LembraVencimentosApp(initialRoute: initialRoute),
+    ),
+  );
 }
 
 class LembraVencimentosApp extends StatelessWidget {
@@ -47,26 +53,25 @@ class LembraVencimentosApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lembra Vencimentos',
-      theme: ThemeData(
-        primaryColor: AppColors.blue,
-        scaffoldBackgroundColor: AppColors.slate,
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-            .copyWith(secondary: AppColors.amber),
-        useMaterial3: true,
-      ),
-      initialRoute: initialRoute,
-      routes: {
-        '/create_user': (context) => const CreateUserPage(),
-        '/terms': (context) => const TermsPage(),
-        '/onboarding': (context) => const OnboardingPage(),
-        '/home': (context) => const HomeScreen(),
-        '/profile': (context) => const ProfilePage(),
-        '/settings': (context) => const SettingsPage(),
-        '/notifications': (context) => const SettingsPage(),
-        '/sync': (context) => const ProfilePage(),
-        '/clear_data': (context) => const ClearDataPage(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Lembra Vencimentos',
+          theme: themeProvider.lightTheme,
+          darkTheme: themeProvider.darkTheme,
+          themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          initialRoute: initialRoute,
+          routes: {
+            '/create_user': (context) => const CreateUserPage(),
+            '/terms': (context) => const TermsPage(),
+            '/onboarding': (context) => const OnboardingPage(),
+            '/home': (context) => const HomeScreen(),
+            '/profile': (context) => const ProfilePage(),
+            '/settings': (context) => const SettingsPage(),
+            '/notifications': (context) => const SettingsPage(),
+            '/clear_data': (context) => const ClearDataPage(),
+          },
+        );
       },
     );
   }

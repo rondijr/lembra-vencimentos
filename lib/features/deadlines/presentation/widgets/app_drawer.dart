@@ -30,6 +30,17 @@ class _AppDrawerState extends State<AppDrawer> {
       final userId = await _storageService.getString('user_id');
       if (userId != null) {
         final user = await _userService.getUser(userId);
+        
+        // Se usuário foi deletado do Supabase, limpa dados e volta para criação
+        if (user == null && mounted) {
+          await _storageService.clear();
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/create_user',
+            (route) => false,
+          );
+          return;
+        }
+        
         setState(() {
           _user = user;
           _isLoading = false;
@@ -139,16 +150,6 @@ class _AppDrawerState extends State<AppDrawer> {
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/notifications');
-                    },
-                  ),
-                  _buildMenuItem(
-                    context,
-                    icon: Icons.cloud_outlined,
-                    title: 'Sincronização',
-                    subtitle: isAuthenticated ? 'Ativa' : 'Desativada',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/sync');
                     },
                   ),
                   _buildMenuItem(

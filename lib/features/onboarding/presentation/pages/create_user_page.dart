@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domain/entities/user.dart';
 import '../../../../core/services/user_service.dart';
@@ -179,6 +180,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                     controller: _ageController,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'Idade',
                       labelStyle: TextStyle(color: AppColors.onSlate),

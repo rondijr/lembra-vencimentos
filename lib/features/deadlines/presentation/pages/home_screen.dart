@@ -1,8 +1,10 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../domain/entities/deadline.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/services/supabase_service.dart';
+import '../../../../core/services/user_service.dart';
 import '../../data/repositories/deadlines_sync_repository.dart';
 import 'add_deadline_page.dart';
 import '../widgets/deadline_list_item.dart';
@@ -28,9 +30,33 @@ class _HomeScreenState extends State<HomeScreen> {
       supabaseService: SupabaseService(),
     );
     _load();
+    _checkUserExists();
+  }
+
+  Future<void> _checkUserExists() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
+    
+    if (userId != null) {
+      final userService = UserService();
+      final user = await userService.getUser(userId);
+      
+      // Se usuário foi deletado do Supabase, limpa dados e volta para criação
+      if (user == null && mounted) {
+        await prefs.clear();
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/create_user',
+          (route) => false,
+        );
+      }
+    }
   }
 
   Future<void> _load() async {
+    // Verifica se usuário ainda existe antes de carregar
+    await _checkUserExists();
+    if (!mounted) return;
+    
     setState(() => _isLoading = true);
     print('🔄 Carregando prazos...');
     try {
@@ -50,6 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onAdd() async {
+    // Verifica se usuário ainda existe antes de adicionar
+    await _checkUserExists();
+    if (!mounted) return;
+    
     final added = await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const AddDeadlinePage()),
     );
@@ -96,10 +126,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         SizedBox(
                           height: constraints.maxHeight,
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               'Nenhum prazo. Toque em + para cadastrar o 1º prazo.\n\nArraste para baixo para atualizar.',
-                              style: TextStyle(color: AppColors.onSlate),
+                              style: TextStyle(
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ),
