@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/config/supabase_config.dart';
 import 'core/utils/theme_provider.dart';
 import 'features/deadlines/presentation/pages/home_screen.dart';
@@ -16,6 +17,9 @@ import 'core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Carrega variáveis de ambiente do arquivo .env
+  await dotenv.load(fileName: ".env");
   
   // Inicializa locale pt_BR para formatação de datas
   await initializeDateFormatting('pt_BR', null);

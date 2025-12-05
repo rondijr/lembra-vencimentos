@@ -1,10 +1,12 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class SupabaseConfig {
-  // TODO: Substituir com suas credenciais do Supabase
-  // Acesse: https://app.supabase.com
-  // 1. Crie um novo projeto
-  // 2. Vá em Settings > API
-  // 3. Copie a URL e a anon key
+  // Credenciais carregadas do arquivo .env
+  // Para configurar:
+  // 1. Copie .env.example para .env
+  // 2. Adicione suas credenciais do Supabase
+  // 3. O arquivo .env está no .gitignore (não será commitado)
   
-  static const String supabaseUrl = 'https://vtechxzadjkwqbkvxqdm.supabase.co';
-  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0ZWNoeHphZGprd3Fia3Z4cWRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NzMzNzQsImV4cCI6MjA4MDQ0OTM3NH0.LGTksB58rpF8bcNgndUolrf1nPpoTu9V-GG6ZjAEsbs';
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 }
