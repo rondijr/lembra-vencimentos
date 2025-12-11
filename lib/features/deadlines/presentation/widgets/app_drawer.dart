@@ -66,9 +66,11 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget build(BuildContext context) {
     final supabaseService = SupabaseService();
     final isAuthenticated = supabaseService.isAuthenticated;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
 
     return Drawer(
-      backgroundColor: AppColors.slate,
+      backgroundColor: bgColor,
       child: SafeArea(
         child: Column(
           children: [
@@ -120,10 +122,10 @@ class _AppDrawerState extends State<AppDrawer> {
                         // Nome do usuário
                         Text(
                           _user?.name ?? 'Usuário',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.onSlate,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -132,7 +134,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           _user != null ? '${_user!.age} anos' : 'Carregando...',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.onSlate.withValues(alpha: 0.7),
+                            color: textColor.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -152,6 +154,36 @@ class _AppDrawerState extends State<AppDrawer> {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/profile');
                     },
+                  ),
+                  const Divider(
+                    color: Colors.white24,
+                    height: 32,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.category_outlined,
+                    title: 'Categorias',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/categories');
+                    },
+                  ),
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.label_outlined,
+                    title: 'Tags',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/tags');
+                    },
+                  ),
+                  const Divider(
+                    color: Colors.white24,
+                    height: 32,
+                    indent: 16,
+                    endIndent: 16,
                   ),
                   _buildMenuItem(
                     context,
@@ -245,7 +277,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     'Lembra Vencimentos v0.1.0',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.onSlate.withValues(alpha: 0.5),
+                      color: textColor.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -264,6 +296,8 @@ class _AppDrawerState extends State<AppDrawer> {
     String? subtitle,
     required VoidCallback onTap,
   }) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    
     return ListTile(
       leading: Icon(
         icon,
@@ -272,8 +306,8 @@ class _AppDrawerState extends State<AppDrawer> {
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          color: AppColors.onSlate,
+        style: TextStyle(
+          color: textColor,
           fontSize: 16,
         ),
       ),
@@ -281,29 +315,32 @@ class _AppDrawerState extends State<AppDrawer> {
           ? Text(
               subtitle,
               style: TextStyle(
-                color: AppColors.onSlate.withValues(alpha: 0.6),
+                color: textColor.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
             )
           : null,
       trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.onSlate.withValues(alpha: 0.3),
+        color: textColor.withValues(alpha: 0.3),
       ),
       onTap: onTap,
     );
   }
 
   void _showHelpDialog(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.slate,
-        title: const Text(
+        backgroundColor: bgColor,
+        title: Text(
           'Ajuda',
-          style: TextStyle(color: AppColors.onSlate),
+          style: TextStyle(color: textColor),
         ),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
             '''Como usar o app:
 
@@ -317,7 +354,7 @@ Dicas:
 • Sincronize com Supabase para backup
 • Revise seus prazos regularmente''',
             style: TextStyle(
-              color: AppColors.onSlate,
+              color: textColor,
               height: 1.5,
             ),
           ),
@@ -336,54 +373,57 @@ Dicas:
   }
 
   void _showAboutDialog(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.slate,
-        title: const Text(
+        backgroundColor: bgColor,
+        title: Text(
           'Sobre',
-          style: TextStyle(color: AppColors.onSlate),
+          style: TextStyle(color: textColor),
         ),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.calendar_today,
                 size: 64,
                 color: AppColors.blue,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Lembra Vencimentos',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.onSlate,
+                  color: textColor,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Versão 0.1.0',
                 style: TextStyle(
                   color: AppColors.amber,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'App para gerenciar prazos e vencimentos de documentos importantes como RG, CNH, carteirinhas e mais.',
                 style: TextStyle(
-                  color: AppColors.onSlate,
+                  color: textColor,
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 '© 2025 - Código Aberto',
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.onSlate,
+                  color: textColor,
                 ),
               ),
             ],

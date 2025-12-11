@@ -14,6 +14,8 @@ import 'features/onboarding/presentation/pages/splash_page.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/onboarding/presentation/pages/terms_page.dart';
 import 'features/onboarding/presentation/pages/create_user_page.dart';
+import 'features/categories/presentation/pages/category_list_page.dart';
+import 'features/tags/presentation/pages/tag_list_page.dart';
 import 'core/services/notification_service.dart';
 
 void main() async {
@@ -64,6 +66,8 @@ class LembraVencimentosApp extends StatelessWidget {
             '/settings': (context) => const SettingsPage(),
             '/notifications': (context) => const NotificationsPage(),
             '/clear_data': (context) => const ClearDataPage(),
+            '/categories': (context) => const CategoryListPage(),
+            '/tags': (context) => const TagListPage(),
           },
         );
       },
