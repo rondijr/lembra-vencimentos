@@ -22,7 +22,14 @@ class Categories {
     name: 'Documentos',
     icon: Icons.badge_outlined,
     color: Color(0xFF2563EB), // Blue
-    subcategories: ['RG', 'CNH', 'Passaporte', 'Carteira de Trabalho', 'CPF'],
+    subcategories: [
+      'RG',
+      'CNH',
+      'Passaporte',
+      'Carteira de Trabalho',
+      'CPF',
+      'Outros'
+    ],
   );
 
   static const saude = DeadlineCategory(
@@ -30,7 +37,14 @@ class Categories {
     name: 'Saúde',
     icon: Icons.favorite_outline,
     color: Color(0xFFEF4444), // Red
-    subcategories: ['Vacina', 'Exame', 'Consulta', 'Receita Médica', 'Óculos'],
+    subcategories: [
+      'Vacina',
+      'Exame',
+      'Consulta',
+      'Receita Médica',
+      'Óculos',
+      'Outros'
+    ],
   );
 
   static const financeiro = DeadlineCategory(
@@ -38,7 +52,14 @@ class Categories {
     name: 'Financeiro',
     icon: Icons.attach_money,
     color: Color(0xFF10B981), // Green
-    subcategories: ['Boleto', 'Cartão', 'Imposto', 'Seguro', 'Aluguel'],
+    subcategories: [
+      'Boleto',
+      'Cartão',
+      'Imposto',
+      'Seguro',
+      'Aluguel',
+      'Outros'
+    ],
   );
 
   static const veiculos = DeadlineCategory(
@@ -46,7 +67,14 @@ class Categories {
     name: 'Veículos',
     icon: Icons.directions_car_outlined,
     color: Color(0xFF8B5CF6), // Purple
-    subcategories: ['Licenciamento', 'Revisão', 'Seguro', 'IPVA', 'Vistoria'],
+    subcategories: [
+      'Licenciamento',
+      'Revisão',
+      'Seguro',
+      'IPVA',
+      'Vistoria',
+      'Outros'
+    ],
   );
 
   static const casa = DeadlineCategory(
@@ -54,7 +82,14 @@ class Categories {
     name: 'Casa',
     icon: Icons.home_outlined,
     color: Color(0xFFF59E0B), // Amber
-    subcategories: ['Garantia', 'Manutenção', 'Contrato', 'IPTU', 'Condomínio'],
+    subcategories: [
+      'Garantia',
+      'Manutenção',
+      'Contrato',
+      'IPTU',
+      'Condomínio',
+      'Outros'
+    ],
   );
 
   static const educacao = DeadlineCategory(
@@ -67,7 +102,8 @@ class Categories {
       'Mensalidade',
       'Prova',
       'Trabalho',
-      'Certificação'
+      'Certificação',
+      'Outros'
     ],
   );
 
@@ -76,7 +112,14 @@ class Categories {
     name: 'Pets',
     icon: Icons.pets_outlined,
     color: Color(0xFFEC4899), // Pink
-    subcategories: ['Vacina', 'Vermífugo', 'Banho', 'Consulta', 'Ração'],
+    subcategories: [
+      'Vacinação',
+      'Vermífugo',
+      'Banho',
+      'Consulta',
+      'Ração',
+      'Outros'
+    ],
   );
 
   static const outros = DeadlineCategory(

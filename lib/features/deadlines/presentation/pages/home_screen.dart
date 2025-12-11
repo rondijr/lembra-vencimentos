@@ -142,126 +142,238 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+
     return Scaffold(
       drawer: const AppDrawer(),
-      appBar: AppBar(
-        title: const Text('Lembra Vencimentos'),
+      backgroundColor: bgColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _onAdd,
         backgroundColor: AppColors.blue,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: TextField(
-              onChanged: _onSearchChanged,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Buscar prazos...',
-                hintStyle:
-                    TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.white),
-                        onPressed: () => _onSearchChanged(''),
-                      )
-                    : null,
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.15),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-            ),
-          ),
-        ),
+        icon: const Icon(Icons.add),
+        label: const Text('Novo Prazo'),
       ),
-      floatingActionButton: RepaintBoundary(
-        child: FloatingActionButton(
-          onPressed: _onAdd,
-          backgroundColor: AppColors.amber,
-          child: const Icon(Icons.add),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        color: AppColors.blue,
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.blue,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _load,
+          color: AppColors.blue,
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.blue,
+                  ),
+                )
+              : CustomScrollView(
+                  slivers: [
+                    // Header moderno
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Menu e título
+                            Row(
+                              children: [
+                                Builder(
+                                  builder: (context) => Container(
+                                    decoration: BoxDecoration(
+                                      color: textColor.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(Icons.menu, color: textColor),
+                                      onPressed: () =>
+                                          Scaffold.of(context).openDrawer(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Lembra',
+                                        style: TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: textColor,
+                                          height: 1,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Vencimentos',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                          color: AppColors.blue,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            // Barra de busca moderna
+                            Container(
+                              decoration: BoxDecoration(
+                                color: textColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: textColor.withValues(alpha: 0.1),
+                                ),
+                              ),
+                              child: TextField(
+                                onChanged: _onSearchChanged,
+                                style: TextStyle(color: textColor),
+                                decoration: InputDecoration(
+                                  hintText: 'Buscar prazos...',
+                                  hintStyle: TextStyle(
+                                    color: textColor.withValues(alpha: 0.5),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.search,
+                                    color: textColor.withValues(alpha: 0.5),
+                                  ),
+                                  suffixIcon: _searchQuery.isNotEmpty
+                                      ? IconButton(
+                                          icon: Icon(Icons.clear,
+                                              color: textColor),
+                                          onPressed: () => _onSearchChanged(''),
+                                        )
+                                      : null,
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Filtro de categorias
+                    SliverToBoxAdapter(child: _buildCategoryFilter(textColor)),
+                    // Estatísticas
+                    SliverToBoxAdapter(child: _buildStats(textColor)),
+                    // Lista de prazos
+                    _buildDeadlinesList(textColor),
+                  ],
                 ),
-              )
-            : Column(
-                children: [
-                  // Filtro de categorias
-                  _buildCategoryFilter(),
-                  // Estatísticas
-                  _buildStats(),
-                  // Lista de prazos
-                  Expanded(child: _buildDeadlinesList()),
-                ],
-              ),
+        ),
       ),
     );
   }
 
-  Widget _buildCategoryFilter() {
-    return Container(
-      height: 80,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+  Widget _buildCategoryFilter(Color textColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCategoryChip(null, 'Todos', Icons.grid_view, Colors.grey),
-          ...Categories.all.map((cat) => _buildCategoryChip(
-                cat.id,
-                cat.name,
-                cat.icon,
-                cat.color,
-              )),
+          Text(
+            'Categorias',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 100,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _buildCategoryChip(
+                    null, 'Todos', Icons.grid_view, Colors.grey, textColor),
+                ...Categories.all.map((cat) => _buildCategoryChip(
+                      cat.id,
+                      cat.name,
+                      cat.icon,
+                      cat.color,
+                      textColor,
+                    )),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
   }
 
   Widget _buildCategoryChip(
-      String? id, String label, IconData icon, Color color) {
+      String? id, String label, IconData icon, Color color, Color textColor) {
     final isSelected = _selectedCategoryFilter == id;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: FilterChip(
-        selected: isSelected,
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18, color: isSelected ? Colors.white : color),
-            const SizedBox(width: 6),
-            Text(label),
-          ],
+      padding: const EdgeInsets.only(right: 12),
+      child: GestureDetector(
+        onTap: () => _onCategoryFilterChanged(id),
+        child: Container(
+          width: 85,
+          decoration: BoxDecoration(
+            gradient: isSelected
+                ? LinearGradient(
+                    colors: [color, color.withValues(alpha: 0.7)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isSelected ? null : Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected ? color : Colors.white.withValues(alpha: 0.1),
+              width: isSelected ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 28,
+                  color: isSelected ? Colors.white : color,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected
+                      ? Colors.white
+                      : textColor.withValues(alpha: 0.7),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
-        onSelected: (_) => _onCategoryFilterChanged(id),
-        backgroundColor: color.withValues(alpha: 0.1),
-        selectedColor: color,
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.white : color,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
     );
   }
 
-  Widget _buildStats() {
+  Widget _buildStats(Color textColor) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final next7Days = today.add(const Duration(days: 7));
@@ -284,42 +396,74 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (_filteredItems.isEmpty) return const SizedBox.shrink();
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: _buildStatCard('Hoje', vencidosHoje, Colors.red),
+          Text(
+            'Resumo',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _buildStatCard('7 dias', proximos7, Colors.orange),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _buildStatCard('30 dias', proximos30, Colors.blue),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                    'Hoje', vencidosHoje, Colors.red, Icons.today, textColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard('7 dias', proximos7, Colors.orange,
+                    Icons.calendar_today, textColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard('30 dias', proximos30, AppColors.blue,
+                    Icons.event, textColor),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(String label, int count, Color color) {
+  Widget _buildStatCard(
+      String label, int count, Color color, IconData icon, Color textColor) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha: 0.2),
+            color.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 12),
           Text(
             '$count',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: color,
+              height: 1,
             ),
           ),
           const SizedBox(height: 4),
@@ -327,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey.shade600,
+              color: textColor.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -335,71 +479,108 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDeadlinesList() {
+  Widget _buildDeadlinesList(Color textColor) {
     if (_filteredItems.isEmpty &&
         _searchQuery.isEmpty &&
         _selectedCategoryFilter == null) {
-      return LayoutBuilder(
-        builder: (context, constraints) => ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            SizedBox(
-              height: constraints.maxHeight,
-              child: Center(
-                child: Text(
-                  'Nenhum prazo. Toque em + para cadastrar o 1º prazo.\n\nArraste para baixo para atualizar.',
+      return SliverFillRemaining(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.event_note,
+                  size: 80,
+                  color: textColor.withValues(alpha: 0.2),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Nenhum prazo cadastrado',
                   style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    color: textColor.withValues(alpha: 0.7),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Toque em "Novo Prazo" para começar',
+                  style: TextStyle(
+                    color: textColor.withValues(alpha: 0.5),
+                    fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       );
     }
 
     if (_filteredItems.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
-            Text(
-              'Nenhum prazo encontrado',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 16,
+      return SliverFillRemaining(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: textColor.withValues(alpha: 0.3),
               ),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _searchQuery = '';
-                  _selectedCategoryFilter = null;
-                  _applyFilters();
-                });
-              },
-              child: const Text('Limpar filtros'),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                'Nenhum prazo encontrado',
+                style: TextStyle(
+                  color: textColor.withValues(alpha: 0.7),
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _searchQuery = '';
+                    _selectedCategoryFilter = null;
+                    _applyFilters();
+                  });
+                },
+                icon: const Icon(Icons.clear_all),
+                label: const Text('Limpar filtros'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.blue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: _filteredItems.length,
-      itemBuilder: (_, i) {
-        final d = _filteredItems[i];
-        return DeadlineListItem(
-          deadline: d,
-          onDelete: () => _remove(d.id),
-        );
-      },
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 100),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, i) {
+            final d = _filteredItems[i];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: DeadlineListItem(
+                deadline: d,
+                onDelete: () => _remove(d.id),
+              ),
+            );
+          },
+          childCount: _filteredItems.length,
+        ),
+      ),
     );
   }
 }

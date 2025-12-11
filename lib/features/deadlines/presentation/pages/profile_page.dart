@@ -571,6 +571,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final now = DateTime.now();
     final difference = deadline.date.difference(now).inDays;
 
+    // Busca categoria e cor
+    final category = Categories.findBySubcategory(deadline.category);
+    final categoryColor = category?.color ?? Colors.grey;
+    final categoryIcon = category?.icon ?? Icons.description;
+
     Color urgencyColor;
     String urgencyText;
 
@@ -594,14 +599,14 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withValues(alpha: 0.1),
-            Colors.white.withValues(alpha: 0.05),
+            categoryColor.withValues(alpha: 0.2),
+            categoryColor.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: urgencyColor.withValues(alpha: 0.3),
-          width: 1,
+          color: categoryColor.withValues(alpha: 0.4),
+          width: 2,
         ),
       ),
       child: Row(
@@ -609,12 +614,16 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: urgencyColor.withValues(alpha: 0.2),
+              color: categoryColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: categoryColor.withValues(alpha: 0.3),
+                width: 1,
+              ),
             ),
             child: Icon(
-              _getCategoryIcon(deadline.category),
-              color: urgencyColor,
+              categoryIcon,
+              color: categoryColor,
               size: 24,
             ),
           ),
@@ -632,11 +641,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  deadline.category,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.onSlate.withValues(alpha: 0.7),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: categoryColor.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        categoryIcon,
+                        size: 12,
+                        color: categoryColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        deadline.category,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: categoryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -660,21 +689,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
-  }
-
-  IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'rg':
-        return Icons.badge;
-      case 'cnh':
-        return Icons.directions_car;
-      case 'carteirinha':
-        return Icons.credit_card;
-      case 'passaporte':
-        return Icons.flight;
-      default:
-        return Icons.description;
-    }
   }
 
   List<Widget> _buildCategoryStats() {
