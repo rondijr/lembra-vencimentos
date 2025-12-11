@@ -2,6 +2,7 @@
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/categories.dart';
 import '../../domain/entities/deadline.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/services/supabase_service.dart';
@@ -43,7 +44,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     try {
       final id = const Uuid().v4();
       final deadline = Deadline(
@@ -52,26 +53,31 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
         category: _category,
         date: _selected,
       );
-      
+
       // Salva o prazo (local + Supabase)
       await _repository.addDeadline(deadline);
-      print('✅ Prazo salvo: ${deadline.title} - ${deadline.category} - ${deadline.date}');
+      print(
+          '✅ Prazo salvo: ${deadline.title} - ${deadline.category} - ${deadline.date}');
 
       // agenda notificação local: 1 dia antes às 09:00
-      final notifyDate = DateTime(_selected.year, _selected.month, _selected.day)
-        .subtract(const Duration(days: 1))
-        .add(const Duration(hours: 9));
+      final notifyDate =
+          DateTime(_selected.year, _selected.month, _selected.day)
+              .subtract(const Duration(days: 1))
+              .add(const Duration(hours: 9));
       final notifId = id.hashCode & 0x7FFFFFFF;
       await NotificationService().scheduleNotification(
         id: notifId,
         title: 'Vencimento: ${deadline.category}',
-        body: '${deadline.title} vence em ${DateFormat.yMMMMd().format(deadline.date)}',
-        scheduledDate: notifyDate.isBefore(DateTime.now()) ? DateTime.now().add(const Duration(seconds:5)) : notifyDate,
+        body:
+            '${deadline.title} vence em ${DateFormat.yMMMMd().format(deadline.date)}',
+        scheduledDate: notifyDate.isBefore(DateTime.now())
+            ? DateTime.now().add(const Duration(seconds: 5))
+            : notifyDate,
       );
       print('✅ Notificação agendada para: $notifyDate');
 
       if (!mounted) return;
-      
+
       // Mostra feedback de sucesso
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -80,7 +86,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
           duration: const Duration(seconds: 2),
         ),
       );
-      
+
       // Volta para tela anterior e indica que foi salvo
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -101,7 +107,8 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
     return Scaffold(
       backgroundColor: AppColors.slate,
       appBar: AppBar(
-        title: const Text('Cadastrar Prazo', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Cadastrar Prazo',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.blue,
         elevation: 0,
       ),
@@ -128,7 +135,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // Campo de descrição
               const Text(
                 'Descrição',
@@ -144,7 +151,8 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'Ex: RG de 2ª via',
-                  hintStyle: TextStyle(color: AppColors.onSlate.withValues(alpha: 0.5)),
+                  hintStyle: TextStyle(
+                      color: AppColors.onSlate.withValues(alpha: 0.5)),
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
@@ -153,22 +161,28 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.blue, width: 2),
+                    borderSide:
+                        const BorderSide(color: AppColors.blue, width: 2),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+                    borderSide:
+                        const BorderSide(color: Colors.redAccent, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
-                validator: (v) => (v==null || v.trim().isEmpty) ? 'Informe uma descrição' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Informe uma descrição'
+                    : null,
               ),
               const SizedBox(height: 24),
-              
+
               // Campo de categoria
               const Text(
                 'Categoria',
@@ -192,50 +206,43 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.blue, width: 2),
+                    borderSide:
+                        const BorderSide(color: AppColors.blue, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'RG',
-                    child: Row(
-                      children: [
-                        Icon(Icons.badge, color: AppColors.blue, size: 20),
-                        SizedBox(width: 12),
-                        Text('RG'),
-                      ],
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'CNH',
-                    child: Row(
-                      children: [
-                        Icon(Icons.directions_car, color: AppColors.blue, size: 20),
-                        SizedBox(width: 12),
-                        Text('CNH'),
-                      ],
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Carteirinha',
-                    child: Row(
-                      children: [
-                        Icon(Icons.card_membership, color: AppColors.blue, size: 20),
-                        SizedBox(width: 12),
-                        Text('Carteirinha'),
-                      ],
-                    ),
-                  ),
-                ],
-                onChanged: (v) { if (v!=null) setState(()=>_category=v); },
+                items: Categories.all.expand((cat) {
+                  return cat.subcategories.map((sub) => DropdownMenuItem(
+                        value: sub,
+                        child: Row(
+                          children: [
+                            Icon(cat.icon, color: cat.color, size: 20),
+                            const SizedBox(width: 12),
+                            Text(sub),
+                            const SizedBox(width: 8),
+                            Text(
+                              '(${cat.name})',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ));
+                }).toList(),
+                onChanged: (v) {
+                  if (v != null) setState(() => _category = v);
+                },
               ),
               const SizedBox(height: 24),
-              
+
               // Campo de data
               const Text(
                 'Data de Vencimento',
@@ -254,7 +261,8 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
@@ -303,7 +311,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // Botão de salvar
               SizedBox(
                 width: double.infinity,

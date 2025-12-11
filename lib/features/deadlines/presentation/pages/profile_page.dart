@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/categories.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/services/user_service.dart';
 import '../../../../core/domain/entities/user.dart' as app_user;
@@ -21,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final _storageService = StorageService();
   final _userService = UserService();
   late final DeadlinesSyncRepository _repository;
-  
+
   app_user.User? _user;
   List<Deadline> _deadlines = [];
   bool _isLoading = true;
@@ -39,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // Carrega usuário
       final userId = await _storageService.getString('user_id');
@@ -49,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
           setState(() => _user = user);
         }
       }
-      
+
       // Carrega prazos
       final deadlines = await _repository.loadDeadlines();
       setState(() => _deadlines = deadlines);
@@ -69,21 +70,21 @@ class _ProfilePageState extends State<ProfilePage> {
         maxHeight: 512,
         imageQuality: 85,
       );
-      
+
       if (pickedFile != null && _user != null) {
         setState(() => _imageFile = File(pickedFile.path));
-        
+
         // Atualiza usuário com o caminho local da foto
         // NOTA: Upload no Supabase Storage requer configuração do bucket "user-photos"
         // Para habilitar: criar bucket público no Supabase Dashboard > Storage
-        
+
         final updatedUser = _user!.copyWith(
           photoUrl: pickedFile.path,
         );
-        
+
         await _userService.updateUser(updatedUser);
         setState(() => _user = updatedUser);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -92,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }
-        
+
         /* CÓDIGO PARA UPLOAD NO SUPABASE STORAGE (quando configurado):
         try {
           final supabase = Supabase.instance.client;
@@ -148,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _removePhoto() async {
     if (_user == null) return;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -179,12 +180,12 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _imageFile = null;
       });
-      
+
       // Atualiza o usuário removendo a foto
       final updatedUser = _user!.copyWith(clearPhoto: true);
       await _userService.updateUser(updatedUser);
       setState(() => _user = updatedUser);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -276,7 +277,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     builder: (context) => EditProfilePage(user: _user!),
                   ),
                 );
-                
+
                 if (result != null && mounted) {
                   setState(() => _user = result);
                 }
@@ -303,7 +304,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: [AppColors.blue, AppColors.blue.withValues(alpha: 0.6)],
+                          colors: [
+                            AppColors.blue,
+                            AppColors.blue.withValues(alpha: 0.6)
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -326,7 +330,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fit: BoxFit.cover,
                                           width: 120,
                                           height: 120,
-                                          errorBuilder: (context, error, stackTrace) {
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
                                             return const Icon(
                                               Icons.person,
                                               size: 60,
@@ -339,7 +344,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fit: BoxFit.cover,
                                           width: 120,
                                           height: 120,
-                                          errorBuilder: (context, error, stackTrace) {
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
                                             return const Icon(
                                               Icons.person,
                                               size: 60,
@@ -378,9 +384,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Nome e idade
             Center(
               child: Column(
@@ -404,9 +410,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Estatísticas
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -431,9 +437,25 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
-            
+
+            // Prazos por Categoria
+            const Text(
+              'Prazos por Categoria',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            ..._buildCategoryStats(),
+
+            const SizedBox(height: 32),
+
             // Título dos lembretes
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -455,9 +477,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Lista de lembretes
             if (_deadlines.isEmpty)
               Container(
@@ -548,10 +570,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildDeadlineCard(Deadline deadline) {
     final now = DateTime.now();
     final difference = deadline.date.difference(now).inDays;
-    
+
     Color urgencyColor;
     String urgencyText;
-    
+
     if (difference < 0) {
       urgencyColor = Colors.red;
       urgencyText = 'VENCIDO';
@@ -653,6 +675,127 @@ class _ProfilePageState extends State<ProfilePage> {
       default:
         return Icons.description;
     }
+  }
+
+  List<Widget> _buildCategoryStats() {
+    if (_deadlines.isEmpty) return [];
+
+    // Agrupar prazos por categoria
+    final Map<String, int> categoryCounts = {};
+    for (final deadline in _deadlines) {
+      final cat = Categories.findBySubcategory(deadline.category);
+      if (cat != null) {
+        categoryCounts[cat.id] = (categoryCounts[cat.id] ?? 0) + 1;
+      }
+    }
+
+    // Ordenar por quantidade (decrescente)
+    final sortedEntries = categoryCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Criar lista de widgets
+    return sortedEntries.map((entry) {
+      final cat = Categories.getById(entry.key);
+      final count = entry.value;
+      final percentage = (count / _deadlines.length * 100).toStringAsFixed(0);
+
+      return Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              cat.color.withValues(alpha: 0.15),
+              cat.color.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: cat.color.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: cat.color.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(cat.icon, color: cat.color, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    cat.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: FractionallySizedBox(
+                            alignment: Alignment.centerLeft,
+                            widthFactor: count / _deadlines.length,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: cat.color,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        '$percentage%',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: cat.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: cat.color.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: cat.color,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   int _getExpiringToday() {
