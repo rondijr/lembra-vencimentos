@@ -41,12 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
       final userService = UserService();
       final user = await userService.getUser(userId);
       
-      // Se usuário foi deletado do Supabase, limpa dados e volta para criação
+      // Se usuário foi deletado do Supabase, limpa dados e volta para termos
       if (user == null) {
         await prefs.clear();
         if (mounted) {
           Navigator.of(context).pushNamedAndRemoveUntil(
-            '/create_user',
+            '/terms',
             (route) => false,
           );
         }

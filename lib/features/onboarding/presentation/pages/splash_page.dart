@@ -24,15 +24,25 @@ class _SplashPageState extends State<SplashPage> {
     final prefs = await SharedPreferences.getInstance();
     final hasAcceptedTerms = prefs.getBool('terms_accepted') ?? false;
     final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    final hasUserId = prefs.getString('user_id');
 
     if (!mounted) return;
 
-    if (!hasAcceptedTerms) {
-      Navigator.of(context).pushReplacementNamed('/terms');
-    } else if (!hasSeenOnboarding) {
-      Navigator.of(context).pushReplacementNamed('/onboarding');
-    } else {
+    // Se tem user_id, já completou tudo, vai direto para home
+    if (hasUserId != null && hasUserId.isNotEmpty) {
       Navigator.of(context).pushReplacementNamed('/home');
+    }
+    // Se não aceitou termos, começa do início
+    else if (!hasAcceptedTerms) {
+      Navigator.of(context).pushReplacementNamed('/terms');
+    }
+    // Se aceitou termos mas não viu onboarding, vai para onboarding
+    else if (!hasSeenOnboarding) {
+      Navigator.of(context).pushReplacementNamed('/onboarding');
+    }
+    // Se viu onboarding mas não criou usuário, vai para criar usuário
+    else {
+      Navigator.of(context).pushReplacementNamed('/create_user');
     }
   }
 

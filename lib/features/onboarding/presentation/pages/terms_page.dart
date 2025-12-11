@@ -258,7 +258,7 @@ class _TermsPageState extends State<TermsPage> with SingleTickerProviderStateMix
                         await prefs.setString('privacy_version', kPrivacyVersion);
                         await prefs.setString('acceptance_date', DateTime.now().toIso8601String());
                         
-                        if (isMounted) navigator.pushReplacementNamed('/home');
+                        if (isMounted) navigator.pushReplacementNamed('/onboarding');
                       } : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.blue,

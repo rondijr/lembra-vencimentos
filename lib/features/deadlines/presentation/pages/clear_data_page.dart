@@ -77,7 +77,7 @@ class ClearDataPage extends StatelessWidget {
           
           if (context.mounted) {
             Navigator.of(context).pushNamedAndRemoveUntil(
-              '/create_user',
+              '/terms',
               (route) => false,
             );
           }

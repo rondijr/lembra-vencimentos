@@ -49,8 +49,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
       await _storageService.setString('user_name', user.name);
 
       if (mounted) {
-        // Vai para a tela de termos
-        Navigator.of(context).pushReplacementNamed('/terms');
+        // Vai para a tela principal
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
       if (mounted) {
