@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/services/user_service.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/domain/entities/user.dart';
+import 'user_avatar_widget.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -97,27 +97,16 @@ class _AppDrawerState extends State<AppDrawer> {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Foto do usuário
-                        _user?.photoUrl != null
-                            ? CircleAvatar(
-                                radius: 40,
-                                backgroundImage: _user!.photoUrl!.startsWith('http')
-                                    ? NetworkImage(_user!.photoUrl!)
-                                    : FileImage(File(_user!.photoUrl!)) as ImageProvider,
-                                backgroundColor: AppColors.blue,
-                              )
-                            : CircleAvatar(
-                                radius: 40,
-                                backgroundColor: AppColors.blue,
-                                child: Text(
-                                  _user?.name.substring(0, 1).toUpperCase() ?? 'U',
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
+                        // Avatar com foto do usuário (substituindo iniciais)
+                        UserAvatarWidget(
+                          userName: _user?.name ?? 'Usuário',
+                          radius: 40,
+                          showEditButton: true,
+                          onAvatarChanged: () {
+                            // Recarrega drawer para atualizar foto
+                            setState(() {});
+                          },
+                        ),
                         const SizedBox(height: 16),
                         // Nome do usuário
                         Text(
