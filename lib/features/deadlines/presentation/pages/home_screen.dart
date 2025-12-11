@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/categories.dart';
 import '../../domain/entities/deadline.dart';
@@ -140,6 +141,78 @@ class _HomeScreenState extends State<HomeScreen> {
     _load();
   }
 
+  // Método de teste para popular todas as categorias
+  Future<void> _populateTestData() async {
+    if (!mounted) return;
+    
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Criar Dados de Teste'),
+        content: const Text('Isso criará 48 prazos de teste, um para cada subcategoria. Continuar?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Criar'),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed != true) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      final uuid = Uuid();
+      int count = 0;
+      int daysOffset = 1;
+      
+      for (var category in Categories.all) {
+        for (var subcategory in category.subcategories) {
+          final deadline = Deadline(
+            id: uuid.v4(),
+            title: 'Teste $subcategory',
+            category: subcategory,
+            date: DateTime.now().add(Duration(days: daysOffset)),
+          );
+          
+          await _repository.addDeadline(deadline);
+          count++;
+          daysOffset += 2;
+        }
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ $count prazos de teste criados!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      
+      await _load();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Erro: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
@@ -192,29 +265,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Lembra',
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          color: textColor,
-                                          height: 1,
+                                  child: GestureDetector(
+                                    onLongPress: _populateTestData,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Lembra',
+                                          style: TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold,
+                                            color: textColor,
+                                            height: 1,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        'Vencimentos',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w300,
-                                          color: AppColors.blue,
-                                          height: 1.2,
+                                        Text(
+                                          'Vencimentos',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w300,
+                                            color: AppColors.blue,
+                                            height: 1.2,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

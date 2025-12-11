@@ -70,7 +70,7 @@ class Categories {
     subcategories: [
       'Licenciamento',
       'Revisão',
-      'Seguro',
+      'Seguro Auto',
       'IPVA',
       'Vistoria',
       'Outros'
@@ -116,7 +116,7 @@ class Categories {
       'Vacinação',
       'Vermífugo',
       'Banho',
-      'Consulta',
+      'Consulta Veterinária',
       'Ração',
       'Outros'
     ],

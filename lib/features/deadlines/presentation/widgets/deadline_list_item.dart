@@ -1,7 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/deadline.dart';
-import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/categories.dart';
 
 class DeadlineListItem extends StatelessWidget {
@@ -14,6 +13,9 @@ class DeadlineListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    
     final dateStr = DateFormat('dd/MM/yyyy').format(deadline.date);
     final daysUntil = deadline.date.difference(DateTime.now()).inDays;
     final isUrgent = daysUntil <= 7;
@@ -78,8 +80,8 @@ class DeadlineListItem extends StatelessWidget {
                   children: [
                     Text(
                       deadline.title,
-                      style: const TextStyle(
-                        color: AppColors.onSlate,
+                      style: TextStyle(
+                        color: textColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -129,13 +131,13 @@ class DeadlineListItem extends StatelessWidget {
                         Icon(
                           Icons.calendar_today,
                           size: 14,
-                          color: AppColors.onSlate.withValues(alpha: 0.6),
+                          color: textColor.withValues(alpha: 0.6),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           dateStr,
                           style: TextStyle(
-                            color: AppColors.onSlate.withValues(alpha: 0.7),
+                            color: textColor.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -177,14 +179,14 @@ class DeadlineListItem extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      backgroundColor: AppColors.slate,
-                      title: const Text(
+                      backgroundColor: bgColor,
+                      title: Text(
                         'Excluir Prazo',
-                        style: TextStyle(color: AppColors.onSlate),
+                        style: TextStyle(color: textColor),
                       ),
                       content: Text(
                         'Deseja excluir "${deadline.title}"?',
-                        style: const TextStyle(color: AppColors.onSlate),
+                        style: TextStyle(color: textColor),
                       ),
                       actions: [
                         TextButton(

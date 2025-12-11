@@ -152,28 +152,32 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.slate,
-        title: const Text(
-          'Remover Foto',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: const Text(
-          'Deseja realmente remover sua foto de perfil?',
-          style: TextStyle(color: AppColors.onSlate),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+      builder: (context) {
+        final bgColor = Theme.of(context).scaffoldBackgroundColor;
+        final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+        return AlertDialog(
+          backgroundColor: bgColor,
+          title: Text(
+            'Remover Foto',
+            style: TextStyle(color: textColor),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Remover'),
+          content: Text(
+            'Deseja realmente remover sua foto de perfil?',
+            style: TextStyle(color: textColor),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Remover'),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed == true) {
@@ -198,9 +202,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showPhotoOptions() {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.slate,
+      backgroundColor: bgColor,
       builder: (context) => Container(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -248,9 +253,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    final cardColor = Theme.of(context).cardColor;
+    
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppColors.slate,
+        backgroundColor: bgColor,
         appBar: AppBar(
           title: const Text('Perfil'),
           backgroundColor: AppColors.blue,
@@ -262,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.slate,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: const Text('Perfil'),
         backgroundColor: AppColors.blue,
@@ -393,10 +402,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     _user?.name ?? 'Usuário',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -404,7 +413,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     '${_user?.age ?? 0} anos',
                     style: TextStyle(
                       fontSize: 16,
-                      color: AppColors.onSlate.withValues(alpha: 0.8),
+                      color: textColor.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -441,12 +450,12 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 32),
 
             // Prazos por Categoria
-            const Text(
+            Text(
               'Prazos por Categoria',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: textColor,
               ),
             ),
 
@@ -460,19 +469,19 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Meus Lembretes',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: textColor,
                   ),
                 ),
                 Text(
                   '${_deadlines.length} total',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.onSlate.withValues(alpha: 0.6),
+                    color: textColor.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -485,7 +494,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: cardColor.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -493,13 +502,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     Icon(
                       Icons.event_note,
                       size: 48,
-                      color: AppColors.onSlate.withValues(alpha: 0.3),
+                      color: textColor.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Nenhum lembrete cadastrado',
                       style: TextStyle(
-                        color: AppColors.onSlate.withValues(alpha: 0.6),
+                        color: textColor.withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                     ),
@@ -520,6 +529,7 @@ class _ProfilePageState extends State<ProfilePage> {
     required String value,
     required Color color,
   }) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -557,7 +567,7 @@ class _ProfilePageState extends State<ProfilePage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
-                color: AppColors.onSlate.withValues(alpha: 0.7),
+                color: textColor.withValues(alpha: 0.7),
                 height: 1.2,
               ),
             ),
@@ -568,6 +578,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildDeadlineCard(Deadline deadline) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
     final now = DateTime.now();
     final difference = deadline.date.difference(now).inDays;
 
@@ -634,10 +645,10 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Text(
                   deadline.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -692,6 +703,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   List<Widget> _buildCategoryStats() {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     if (_deadlines.isEmpty) return [];
 
     // Agrupar prazos por categoria
@@ -748,22 +761,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     cat.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Expanded(
-                        child: Container(
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
+                        Expanded(
+                          child: Container(
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: cardColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
                           child: FractionallySizedBox(
                             alignment: Alignment.centerLeft,
                             widthFactor: count / _deadlines.length,

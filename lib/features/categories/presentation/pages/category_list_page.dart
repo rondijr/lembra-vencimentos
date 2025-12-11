@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/category.dart' as domain;
-import '../../data/repositories/category_repository_impl.dart';
+import '../../data/repositories/category_sync_repository.dart';
+import '../../data/datasources/category_remote_datasource.dart';
+import '../../data/datasources/category_local_datasource.dart';
+import '../../../../core/services/storage_service.dart';
 import '../widgets/category_detail_dialog.dart';
 import 'category_edit_page.dart';
 
@@ -13,13 +16,18 @@ class CategoryListPage extends StatefulWidget {
 }
 
 class _CategoryListPageState extends State<CategoryListPage> {
-  final _repository = CategoryRepositoryImpl();
+  late final CategorySyncRepository _repository;
   List<domain.Category> _categories = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _repository = CategorySyncRepository(
+      remoteDataSource: CategoryRemoteDataSource(),
+      localDataSource: CategoryLocalDataSource(),
+      storageService: StorageService(),
+    );
     _loadCategories();
   }
 

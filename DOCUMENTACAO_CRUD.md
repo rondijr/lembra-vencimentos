@@ -71,12 +71,18 @@ lib/
   - Aplica **normalizações** (remove espaços, duplicatas)
   - **NÃO contém lógica de negócio**
 
+- **DataSources** (`datasources/`): Fontes de dados (novo - persistência)
+  - **RemoteDataSource**: Comunicação com Supabase (backend remoto)
+  - **LocalDataSource**: Cache local com SharedPreferences
+
 - **Repositories** (`repositories/`): Implementação dos contratos do domínio
   - Implementa **como** os dados são salvos/lidos
+  - **CategorySyncRepository**: Sincronização Supabase + Cache Local
+  - Estratégia: Cache-first (resposta rápida) → Sync com servidor
   - Usa DTOs para comunicação com backend
   - Usa Mappers para converter Entity ↔ DTO
 
-**Exemplo**: `CategoryDto` tem campo `color_value` (snake_case), `CategoryMapper` converte para `colorValue` (camelCase) na Entity.
+**Exemplo**: `CategoryDto` tem campo `color_value` (snake_case), `CategoryMapper` converte para `colorValue` (camelCase) na Entity. `CategorySyncRepository` carrega do cache primeiro, depois sincroniza com Supabase em background.
 
 ---
 
@@ -405,18 +411,94 @@ lib/features/
 - [x] Navegação via Drawer
 - [x] Rota configurada em main.dart
 
-### Tag (Segunda Entidade)
-- [x] Entity com invariantes e regras de negócio
-- [x] DTO com serialização JSON
-- [x] Mapper para conversões
-- [x] Repository interface (domain)
-- [x] Repository implementação (data)
-- [x] Tela de listagem (presentation)
-- [x] Diálogo de detalhes com 3 botões (presentation)
-- [x] Tela de edição/criação (presentation)
-- [x] Funcionalidade de remoção integrada
-- [x] Navegação via Drawer
-- [x] Rota configurada em main.dart
+---
+
+## 🔄 Arquitetura de Persistência (Supabase + Cache Local)
+
+### Implementação Completa para Category
+
+#### 1. **Banco de Dados Supabase**
+- **Tabela**: `categories`
+- **Schema SQL**: `supabase_categories_setup.sql`
+- **Colunas**:
+  - `id TEXT PRIMARY KEY`
+  - `name TEXT NOT NULL`
+  - `icon_code INTEGER NOT NULL`
+  - `color_value INTEGER NOT NULL`
+  - `subcategories JSONB DEFAULT '[]'`
+  - `user_id TEXT` (permite filtro por usuário)
+  - `created_at TIMESTAMP WITH TIME ZONE`
+  - `updated_at TIMESTAMP WITH TIME ZONE`
+- **RLS**: Habilitado com políticas públicas (desenvolvimento)
+- **Triggers**: Atualização automática de `updated_at`
+- **Realtime**: Habilitado para sincronização em tempo real
+
+#### 2. **CategoryRemoteDataSource**
+**Arquivo**: `lib/features/categories/data/datasources/category_remote_datasource.dart`
+
+**Responsabilidades**:
+- Comunicação direta com Supabase
+- Operações CRUD remotas
+- Conversão Entity → DTO antes de enviar
+- Logs detalhados de cada operação
+
+**Métodos**:
+- `fetchAll()`: Busca todas categorias do Supabase
+- `fetchById()`: Busca categoria específica
+- `insert()`: Insere nova categoria
+- `update()`: Atualiza categoria existente
+- `delete()`: Remove categoria
+- `watch()`: Stream em tempo real
+
+#### 3. **CategoryLocalDataSource**
+**Arquivo**: `lib/features/categories/data/datasources/category_local_datasource.dart`
+
+**Responsabilidades**:
+- Cache local com SharedPreferences
+- Armazenamento offline
+- Resposta rápida sem conexão
+
+**Métodos**:
+- `getAll()`: Lê todas categorias do cache
+- `save()`: Salva lista completa no cache
+- `clear()`: Limpa cache
+- `add()`, `remove()`, `update()`: Operações individuais
+
+**Estratégia de Cache**:
+- Dados salvos como JSON string
+- Conversão Entity ↔ DTO via Mapper
+- Cache sobrevive ao fechamento do app
+
+#### 4. **CategorySyncRepository**
+**Arquivo**: `lib/features/categories/data/repositories/category_sync_repository.dart`
+
+**Estratégia de Sincronização**:
+```
+1. getAll()
+   ├─ Carrega do cache local (resposta rápida)
+   ├─ Sincroniza com Supabase em background
+   ├─ Atualiza cache com dados do servidor
+   └─ Se offline: usa apenas cache local
+
+2. create() / update() / delete()
+   ├─ Aplica mudança no cache local primeiro
+   ├─ Tenta enviar para Supabase
+   ├─ Recarrega do servidor (syncFromServer)
+   └─ Se falhar: mantém mudança local
+```
+
+**Método syncFromServer()**:
+- Servidor é a fonte da verdade
+- Busca todos dados remotos
+- Substitui completamente cache local
+- Garante consistência
+
+**Logs Detalhados**:
+- 🔄 Sincronizando...
+- 📱 Cache local carregado
+- ☁️ Dados remotos recebidos
+- ✅ Operação concluída
+- ❌ Erro detectado
 
 ---
 
@@ -424,17 +506,28 @@ lib/features/
 
 **Repositório**: https://github.com/rondijr/lembra-vencimentos
 
+### Category - Persistência Completa:
+1. **SQL Schema**: https://github.com/rondijr/lembra-vencimentos/blob/main/supabase_categories_setup.sql
+2. **Remote DataSource**: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/data/datasources/category_remote_datasource.dart
+3. **Local DataSource**: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/data/datasources/category_local_datasource.dart
+4. **Sync Repository**: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/data/repositories/category_sync_repository.dart
+
 ### Category CRUD:
 1. Lista: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/presentation/pages/category_list_page.dart
 2. Diálogo: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/presentation/widgets/category_detail_dialog.dart
 3. Edição: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/presentation/pages/category_edit_page.dart
-4. Repository: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/data/repositories/category_repository_impl.dart
+4. Entity: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/domain/entities/category.dart
+5. DTO: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/data/dtos/category_dto.dart
+6. Mapper: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/categories/data/mappers/category_mapper.dart
 
 ### Tag CRUD:
 1. Lista: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/presentation/pages/tag_list_page.dart
 2. Diálogo: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/presentation/widgets/tag_detail_dialog.dart
 3. Edição: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/presentation/pages/tag_edit_page.dart
-4. Repository: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/data/repositories/tag_repository_impl.dart
+4. Entity: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/domain/entities/tag.dart
+5. DTO: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/data/dtos/tag_dto.dart
+6. Mapper: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/data/mappers/tag_mapper.dart
+7. Repository: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/tags/data/repositories/tag_repository_impl.dart
 
 ### Navegação:
 - Drawer: https://github.com/rondijr/lembra-vencimentos/blob/main/lib/features/deadlines/presentation/widgets/app_drawer.dart
@@ -443,15 +536,49 @@ lib/features/
 
 ## 📝 Observações Finais
 
-- **Arquitetura**: Clean Architecture pura, separação clara de responsabilidades
-- **Padrões**: Repository Pattern, DTO Pattern, Mapper Pattern
-- **Testabilidade**: Camadas isoladas permitem testes unitários sem dependências
-- **Escalabilidade**: Fácil adicionar novas entidades seguindo o mesmo padrão
-- **Manutenibilidade**: Código organizado, fácil localizar e modificar funcionalidades
+### Arquitetura Completa Implementada:
+- ✅ **Clean Architecture**: Separação clara de camadas (domain/data/presentation)
+- ✅ **Entity ≠ DTO + Mapper**: 4 entidades com conversões bidirecionais
+- ✅ **CRUD Visual**: 2 entidades com UI completa (list, detail, edit)
+- ✅ **Persistência Completa**: Supabase (remoto) + SharedPreferences (cache local)
+- ✅ **Sincronização**: Cache-first com sync em background
+- ✅ **Offline-first**: App funciona sem conexão usando cache
+
+### Padrões de Projeto:
+- **Repository Pattern**: Interface no domain, implementação no data
+- **DTO Pattern**: Separação Entity (negócio) vs DTO (persistência)
+- **Mapper Pattern**: Conversões Entity ↔ DTO com normalizações
+- **DataSource Pattern**: Remote (Supabase) + Local (SharedPreferences)
+- **Sync Pattern**: Cache-first → Background sync → Update cache
+
+### Vantagens da Arquitetura:
+- **Testabilidade**: Camadas isoladas, fácil mockar datasources
+- **Escalabilidade**: Padrão replicável para novas entidades
+- **Manutenibilidade**: Código organizado, fácil localizar bugs
+- **Performance**: Cache local garante resposta rápida
+- **Resiliência**: Funciona offline, sincroniza quando online
+
+### Fluxo de Dados (Category):
+```
+UI (CategoryListPage)
+  ↓ getAll()
+CategorySyncRepository
+  ↓ getAll() → cache
+CategoryLocalDataSource (SharedPreferences)
+  ↓ fetchAll() → servidor
+CategoryRemoteDataSource (Supabase)
+  ↓ DTOs
+CategoryMapper (Entity ↔ DTO)
+  ↓ Entities
+CategorySyncRepository → save cache
+  ↑ return
+UI (atualiza lista)
+```
 
 ---
 
 **Desenvolvido por**: Rondi Jr  
 **Data**: Dezembro 2025  
 **Disciplina**: Desenvolvimento Mobile com Flutter  
-**Tema**: CRUD com Clean Architecture
+**Tema**: Clean Architecture + Persistência (Supabase + Cache)
+

@@ -11,16 +11,19 @@ class ClearDataPage extends StatelessWidget {
   Future<void> _clearAllData(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.slate,
-        title: const Text(
-          'Limpar Todos os Dados?',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: const Text(
-          'Isso irá:\n• Apagar todos os prazos do Supabase e locais\n• Remover seu perfil do Supabase\n• Resetar o app para primeira execução\n\nEsta ação não pode ser desfeita!',
-          style: TextStyle(color: AppColors.onSlate),
-        ),
+      builder: (context) {
+        final bgColor = Theme.of(context).scaffoldBackgroundColor;
+        final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+        return AlertDialog(
+          backgroundColor: bgColor,
+          title: Text(
+            'Limpar Todos os Dados?',
+            style: TextStyle(color: textColor),
+          ),
+          content: Text(
+            'Isso irá:\n• Apagar todos os prazos do Supabase e locais\n• Remover seu perfil do Supabase\n• Resetar o app para primeira execução\n\nEsta ação não pode ser desfeita!',
+            style: TextStyle(color: textColor),
+          ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -32,7 +35,8 @@ class ClearDataPage extends StatelessWidget {
             child: const Text('Limpar Tudo'),
           ),
         ],
-      ),
+        );
+      },
     );
 
     if (confirmed == true && context.mounted) {
@@ -97,8 +101,11 @@ class ClearDataPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    
     return Scaffold(
-      backgroundColor: AppColors.slate,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: const Text('Limpar Dados'),
         backgroundColor: AppColors.blue,
@@ -125,10 +132,10 @@ class ClearDataPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Use esta opção para resetar o app e testar o fluxo completo desde o início',
                 style: TextStyle(
-                  color: AppColors.onSlate,
+                  color: textColor,
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.center,

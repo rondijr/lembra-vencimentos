@@ -104,8 +104,12 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    final cardColor = Theme.of(context).cardColor;
+    
     return Scaffold(
-      backgroundColor: AppColors.slate,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: const Text('Cadastrar Prazo',
             style: TextStyle(fontWeight: FontWeight.bold)),
@@ -137,7 +141,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
               const SizedBox(height: 32),
 
               // Campo de descrição
-              const Text(
+              Text(
                 'Descrição',
                 style: TextStyle(
                   fontSize: 16,
@@ -148,13 +152,13 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _titleCtrl,
-                style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
+                style: TextStyle(color: textColor, fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'Ex: RG de 2ª via',
                   hintStyle: TextStyle(
-                      color: AppColors.onSlate.withValues(alpha: 0.5)),
+                      color: textColor.withValues(alpha: 0.5)),
                   filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.1),
+                  fillColor: cardColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -162,7 +166,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        BorderSide(color: textColor.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -184,7 +188,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
               const SizedBox(height: 24),
 
               // Campo de categoria
-              const Text(
+              Text(
                 'Categoria',
                 style: TextStyle(
                   fontSize: 16,
@@ -195,11 +199,11 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: _category,
-                dropdownColor: AppColors.slate,
-                style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
+                dropdownColor: bgColor,
+                style: TextStyle(color: textColor, fontSize: 16),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.1),
+                  fillColor: cardColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -207,7 +211,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        BorderSide(color: textColor.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -244,7 +248,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
               const SizedBox(height: 24),
 
               // Campo de data
-              const Text(
+              Text(
                 'Data de Vencimento',
                 style: TextStyle(
                   fontSize: 16,
@@ -259,10 +263,10 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(12),
                     border:
-                        Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        Border.all(color: textColor.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
@@ -285,8 +289,8 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                           children: [
                             Text(
                               DateFormat('dd/MM/yyyy').format(_selected),
-                              style: const TextStyle(
-                                color: AppColors.onSlate,
+                              style: TextStyle(
+                                color: textColor,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -295,7 +299,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                             Text(
                               DateFormat.EEEE('pt_BR').format(_selected),
                               style: TextStyle(
-                                color: AppColors.onSlate.withValues(alpha: 0.6),
+                                color: textColor.withValues(alpha: 0.6),
                                 fontSize: 14,
                               ),
                             ),

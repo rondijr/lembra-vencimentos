@@ -75,8 +75,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+    final cardColor = Theme.of(context).cardColor;
+    
     return Scaffold(
-      backgroundColor: AppColors.slate,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: const Text('Editar Perfil'),
         backgroundColor: AppColors.blue,
@@ -104,24 +108,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _nameController,
-                      style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
+                      style: TextStyle(color: textColor, fontSize: 16),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white.withValues(alpha: 0.1),
+                        fillColor: cardColor.withValues(alpha: 0.1),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.onSlate.withValues(alpha: 0.3)),
+                          borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.onSlate.withValues(alpha: 0.3)),
+                          borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: AppColors.blue, width: 2),
                         ),
                         hintText: 'Digite seu nome',
-                        hintStyle: TextStyle(color: AppColors.onSlate.withValues(alpha: 0.5)),
+                        hintStyle: TextStyle(color: textColor.withValues(alpha: 0.5)),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -150,24 +154,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       controller: _ageController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
+                      style: TextStyle(color: textColor, fontSize: 16),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white.withValues(alpha: 0.1),
+                        fillColor: cardColor.withValues(alpha: 0.1),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.onSlate.withValues(alpha: 0.3)),
+                          borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.onSlate.withValues(alpha: 0.3)),
+                          borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: AppColors.blue, width: 2),
                         ),
                         hintText: 'Digite sua idade',
-                        hintStyle: TextStyle(color: AppColors.onSlate.withValues(alpha: 0.5)),
+                        hintStyle: TextStyle(color: textColor.withValues(alpha: 0.5)),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -212,7 +216,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         'Cancelar',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.onSlate.withValues(alpha: 0.7),
+                          color: textColor.withValues(alpha: 0.7),
                         ),
                       ),
                     ),
