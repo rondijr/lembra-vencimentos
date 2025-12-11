@@ -11,6 +11,9 @@ import 'features/deadlines/presentation/pages/settings_page.dart';
 import 'features/deadlines/presentation/pages/notifications_page.dart';
 import 'features/deadlines/presentation/pages/clear_data_page.dart';
 import 'features/onboarding/presentation/pages/splash_page.dart';
+import 'features/onboarding/presentation/pages/policies_page.dart';
+import 'features/onboarding/presentation/pages/new_onboarding_page.dart';
+import 'features/onboarding/presentation/pages/consent_page.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/onboarding/presentation/pages/terms_page.dart';
 import 'features/onboarding/presentation/pages/create_user_page.dart';
@@ -58,6 +61,9 @@ class LembraVencimentosApp extends StatelessWidget {
           initialRoute: '/',
           routes: {
             '/': (context) => const SplashPage(),
+            '/policies': (context) => const PoliciesPage(),
+            '/new_onboarding': (context) => const NewOnboardingPage(),
+            '/consent': (context) => const ConsentPage(),
             '/onboarding': (context) => const OnboardingPage(),
             '/create_user': (context) => const CreateUserPage(),
             '/terms': (context) => const TermsPage(),

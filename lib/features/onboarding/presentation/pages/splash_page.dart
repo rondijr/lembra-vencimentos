@@ -22,8 +22,9 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final hasAcceptedTerms = prefs.getBool('terms_accepted') ?? false;
+    final hasAcceptedPolicies = prefs.getBool('policy_accepted') ?? false;
     final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    final hasAcceptedConsent = prefs.getString('consent_version') != null;
     final hasUserId = prefs.getString('user_id');
 
     if (!mounted) return;
@@ -32,15 +33,19 @@ class _SplashPageState extends State<SplashPage> {
     if (hasUserId != null && hasUserId.isNotEmpty) {
       Navigator.of(context).pushReplacementNamed('/home');
     }
-    // Se não aceitou termos, começa do início
-    else if (!hasAcceptedTerms) {
-      Navigator.of(context).pushReplacementNamed('/terms');
+    // Se não aceitou políticas, mostra políticas
+    else if (!hasAcceptedPolicies) {
+      Navigator.of(context).pushReplacementNamed('/policies');
     }
-    // Se aceitou termos mas não viu onboarding, vai para onboarding
+    // Se aceitou políticas mas não viu onboarding, vai para onboarding
     else if (!hasSeenOnboarding) {
-      Navigator.of(context).pushReplacementNamed('/onboarding');
+      Navigator.of(context).pushReplacementNamed('/new_onboarding');
     }
-    // Se viu onboarding mas não criou usuário, vai para criar usuário
+    // Se viu onboarding mas não deu consentimento LGPD, vai para consent
+    else if (!hasAcceptedConsent) {
+      Navigator.of(context).pushReplacementNamed('/consent');
+    }
+    // Se deu consentimento mas não criou usuário, vai para criar usuário
     else {
       Navigator.of(context).pushReplacementNamed('/create_user');
     }

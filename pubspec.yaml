@@ -24,6 +24,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   logger: ^2.0.2
   dots_indicator: ^3.0.0
+  flutter_markdown: ^0.7.3  # Viewer de políticas em Markdown
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +40,7 @@ flutter:
     - assets/icons/splash_icon.png
     - assets/images/01.png
     - assets/images/02.png
+    - assets/policies/
     - .env
 
 # Configuração do flutter_launcher_icons
