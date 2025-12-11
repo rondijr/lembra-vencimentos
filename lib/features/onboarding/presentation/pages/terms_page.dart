@@ -215,7 +215,7 @@ class _TermsPageState extends State<TermsPage> with SingleTickerProviderStateMix
                 color: AppColors.slate,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),
@@ -294,9 +294,9 @@ class _TermsPageState extends State<TermsPage> with SingleTickerProviderStateMix
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.blue.withOpacity(0.3), width: 1),
+                border: Border.all(color: AppColors.blue.withValues(alpha: 0.3), width: 1),
               ),
               child: RepaintBoundary(
                 child: Scrollbar(
@@ -353,9 +353,9 @@ class _TermsPageState extends State<TermsPage> with SingleTickerProviderStateMix
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.amber.withOpacity(0.3), width: 1),
+                border: Border.all(color: AppColors.amber.withValues(alpha: 0.3), width: 1),
               ),
               child: RepaintBoundary(
                 child: Scrollbar(

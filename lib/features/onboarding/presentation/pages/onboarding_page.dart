@@ -180,7 +180,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
-              shadowColor: const Color(0xFFF59E0B).withOpacity(0.4),
+              shadowColor: const Color(0xFFF59E0B).withValues(alpha: 0.4),
             ),
           ),
         ),
@@ -309,7 +309,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       color: const Color(0xFF1E293B), // Slate 800
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: const Color(0xFF2563EB).withOpacity(0.3),
+                        color: const Color(0xFF2563EB).withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
