@@ -1,6 +1,5 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,7 +8,9 @@ import 'core/utils/theme_provider.dart';
 import 'features/deadlines/presentation/pages/home_screen.dart';
 import 'features/deadlines/presentation/pages/profile_page.dart';
 import 'features/deadlines/presentation/pages/settings_page.dart';
+import 'features/deadlines/presentation/pages/notifications_page.dart';
 import 'features/deadlines/presentation/pages/clear_data_page.dart';
+import 'features/onboarding/presentation/pages/splash_page.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/onboarding/presentation/pages/terms_page.dart';
 import 'features/onboarding/presentation/pages/create_user_page.dart';
@@ -32,28 +33,16 @@ void main() async {
   
   await NotificationService().init(); // inicializa notificações locais
   
-  // Verifica se usuário já foi criado
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString('user_id');
-  final hasAcceptedTerms = prefs.getBool('terms_accepted') ?? false;
-  
-  String initialRoute = '/create_user';
-  if (userId != null) {
-    initialRoute = hasAcceptedTerms ? '/home' : '/terms';
-  }
-  
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
-      child: LembraVencimentosApp(initialRoute: initialRoute),
+      child: const LembraVencimentosApp(),
     ),
   );
 }
 
 class LembraVencimentosApp extends StatelessWidget {
-  final String initialRoute;
-  
-  const LembraVencimentosApp({Key? key, required this.initialRoute}) : super(key: key);
+  const LembraVencimentosApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -64,15 +53,16 @@ class LembraVencimentosApp extends StatelessWidget {
           theme: themeProvider.lightTheme,
           darkTheme: themeProvider.darkTheme,
           themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          initialRoute: initialRoute,
+          initialRoute: '/',
           routes: {
+            '/': (context) => const SplashPage(),
+            '/onboarding': (context) => const OnboardingPage(),
             '/create_user': (context) => const CreateUserPage(),
             '/terms': (context) => const TermsPage(),
-            '/onboarding': (context) => const OnboardingPage(),
             '/home': (context) => const HomeScreen(),
             '/profile': (context) => const ProfilePage(),
             '/settings': (context) => const SettingsPage(),
-            '/notifications': (context) => const SettingsPage(),
+            '/notifications': (context) => const NotificationsPage(),
             '/clear_data': (context) => const ClearDataPage(),
           },
         );

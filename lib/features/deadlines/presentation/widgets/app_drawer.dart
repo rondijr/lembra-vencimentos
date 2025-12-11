@@ -32,25 +32,33 @@ class _AppDrawerState extends State<AppDrawer> {
         final user = await _userService.getUser(userId);
         
         // Se usuário foi deletado do Supabase, limpa dados e volta para criação
-        if (user == null && mounted) {
+        if (user == null) {
           await _storageService.clear();
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/create_user',
-            (route) => false,
-          );
+          if (mounted) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/create_user',
+              (route) => false,
+            );
+          }
           return;
         }
         
-        setState(() {
-          _user = user;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _user = user;
+            _isLoading = false;
+          });
+        }
       } else {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     } catch (e) {
       print('Erro ao carregar usuário: $e');
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -65,19 +73,20 @@ class _AppDrawerState extends State<AppDrawer> {
         child: Column(
           children: [
             // Header com perfil
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.blue.withOpacity(0.1),
-                border: Border(
-                  bottom: BorderSide(
-                    color: AppColors.blue.withOpacity(0.3),
-                    width: 1,
+            RepaintBoundary(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.blue.withValues(alpha: 0.1),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppColors.blue.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
                   ),
                 ),
-              ),
-              child: _isLoading
+                child: _isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: AppColors.blue,
@@ -123,11 +132,12 @@ class _AppDrawerState extends State<AppDrawer> {
                           _user != null ? '${_user!.age} anos' : 'Carregando...',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.onSlate.withOpacity(0.7),
+                            color: AppColors.onSlate.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
                     ),
+              ),
             ),
             // Menu items
             Expanded(
@@ -203,7 +213,7 @@ class _AppDrawerState extends State<AppDrawer> {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     width: 1,
                   ),
                 ),
@@ -235,7 +245,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     'Lembra Vencimentos v0.1.0',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.onSlate.withOpacity(0.5),
+                      color: AppColors.onSlate.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -271,14 +281,14 @@ class _AppDrawerState extends State<AppDrawer> {
           ? Text(
               subtitle,
               style: TextStyle(
-                color: AppColors.onSlate.withOpacity(0.6),
+                color: AppColors.onSlate.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
             )
           : null,
       trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.onSlate.withOpacity(0.3),
+        color: AppColors.onSlate.withValues(alpha: 0.3),
       ),
       onTap: onTap,
     );

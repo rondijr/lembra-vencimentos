@@ -5,16 +5,23 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:lembra_vencimentos/main.dart';
+import 'package:lembra_vencimentos/core/utils/theme_provider.dart';
 
 void main() {
-  testWidgets('App starts and shows title', (WidgetTester tester) async {
+  testWidgets('App starts and shows initial route', (WidgetTester tester) async {
     // Build the app and trigger a frame.
-      await tester.pumpWidget(const LembraVencimentosApp(isFirstRun: false));
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => ThemeProvider(),
+        child: const LembraVencimentosApp(),
+      ),
+    );
 
-    // Verify the app bar title is present.
-    expect(find.text('Lembra Vencimentos'), findsOneWidget);
+    // Verify the app loads without errors.
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

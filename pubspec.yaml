@@ -19,14 +19,48 @@ dependencies:
   image_picker: ^1.0.7
   provider: ^6.1.1
   flutter_dotenv: ^5.1.0
+  logger: ^2.0.2
+  dots_indicator: ^3.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.13.1
+  # flutter_native_splash: ^2.3.10
 
 flutter:
   uses-material-design: true
   assets:
     - assets/icons/calendar_bell.svg
+    - assets/icons/splash_icon.png
+    - assets/images/01.png
+    - assets/images/02.png
     - .env
+
+# Configuração do flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  # Configurações adicionais para diferentes plataformas
+  adaptive_icon_background: "#0F172A"  # Slate - cor principal
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
+  
+  # Web
+  web:
+    generate: true
+    image_path: "assets/icons/app_icon.png"
+    background_color: "#0F172A"
+    theme_color: "#2563EB"
+  
+  # Windows
+  windows:
+    generate: true
+    image_path: "assets/icons/app_icon.png"
+    icon_size: 48
+  
+  # macOS
+  macos:
+    generate: true
+    image_path: "assets/icons/app_icon.png"

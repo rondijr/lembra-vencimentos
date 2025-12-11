@@ -37,12 +37,13 @@ class User {
     String? name,
     int? age,
     String? photoUrl,
+    bool clearPhoto = false,
   }) {
     return User(
       id: id,
       name: name ?? this.name,
       age: age ?? this.age,
-      photoUrl: photoUrl ?? this.photoUrl,
+      photoUrl: clearPhoto ? null : (photoUrl ?? this.photoUrl),
       createdAt: createdAt,
     );
   }

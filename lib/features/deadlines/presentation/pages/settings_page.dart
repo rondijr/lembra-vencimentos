@@ -1,38 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/utils/theme_provider.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
-
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  bool _notificationsEnabled = true;
-  String _notificationTime = '09:00';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSettings();
-  }
-
-  Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
-      _notificationTime = prefs.getString('notification_time') ?? '09:00';
-    });
-  }
-
-  Future<void> _saveSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('notifications_enabled', _notificationsEnabled);
-    await prefs.setString('notification_time', _notificationTime);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,69 +16,86 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: ListView(
         children: [
-          _buildSection(context, 'Notificações'),
-          SwitchListTile(
-            title: Text(
-              'Habilitar Notificações',
-              style: theme.textTheme.bodyLarge,
-            ),
-            subtitle: Text(
-              'Receba lembretes sobre vencimentos',
-              style: theme.textTheme.bodyMedium,
-            ),
-            value: _notificationsEnabled,
-            activeColor: theme.colorScheme.primary,
-            onChanged: (value) {
-              setState(() => _notificationsEnabled = value);
-              _saveSettings();
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.access_time, color: theme.colorScheme.primary),
-            title: Text(
-              'Horário das Notificações',
-              style: theme.textTheme.bodyLarge,
-            ),
-            subtitle: Text(
-              _notificationTime,
-              style: theme.textTheme.bodyMedium,
-            ),
-            trailing: Icon(Icons.chevron_right, color: theme.iconTheme.color),
-            onTap: () async {
-              final time = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay(
-                  hour: int.parse(_notificationTime.split(':')[0]),
-                  minute: int.parse(_notificationTime.split(':')[1]),
-                ),
-              );
-              if (time != null) {
-                setState(() {
-                  _notificationTime = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-                });
-                _saveSettings();
-              }
-            },
-          ),
-          Divider(color: theme.dividerColor),
           _buildSection(context, 'Aparência'),
           SwitchListTile(
+            secondary: Icon(
+              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              color: theme.colorScheme.primary,
+            ),
             title: Text(
-              themeProvider.isDarkMode ? 'Mudar para Tema Claro' : 'Mudar para Tema Escuro',
+              'Tema Escuro',
               style: theme.textTheme.bodyLarge,
             ),
             subtitle: Text(
-              themeProvider.isDarkMode ? 'Ativar tema claro' : 'Ativar tema escuro',
+              themeProvider.isDarkMode ? 'Ativado' : 'Desativado',
               style: theme.textTheme.bodyMedium,
             ),
             value: themeProvider.isDarkMode,
-            activeColor: theme.colorScheme.primary,
+            activeThumbColor: theme.colorScheme.primary,
             onChanged: (value) {
               themeProvider.toggleTheme();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Tema ${value ? "escuro" : "claro"} ativado'),
-                  backgroundColor: theme.colorScheme.primary,
+            },
+          ),
+          Divider(color: theme.dividerColor),
+          _buildSection(context, 'Notificações'),
+          ListTile(
+            leading: Icon(Icons.notifications, color: theme.colorScheme.primary),
+            title: Text(
+              'Gerenciar Notificações',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: Text(
+              'Horário, antecedência e preferências',
+              style: theme.textTheme.bodyMedium,
+            ),
+            trailing: Icon(Icons.chevron_right, color: theme.iconTheme.color),
+            onTap: () {
+              Navigator.pushNamed(context, '/notifications');
+            },
+          ),
+          Divider(color: theme.dividerColor),
+          _buildSection(context, 'Conta'),
+          ListTile(
+            leading: Icon(Icons.person, color: theme.colorScheme.primary),
+            title: Text(
+              'Editar Perfil',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: Text(
+              'Altere seu nome e idade',
+              style: theme.textTheme.bodyMedium,
+            ),
+            trailing: Icon(Icons.chevron_right, color: theme.iconTheme.color),
+            onTap: () {
+              Navigator.of(context).pushNamed('/profile');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.lock, color: theme.colorScheme.primary),
+            title: Text(
+              'Privacidade',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: Text(
+              'Seus dados são armazenados localmente',
+              style: theme.textTheme.bodyMedium,
+            ),
+            trailing: Icon(Icons.chevron_right, color: theme.iconTheme.color),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Privacidade'),
+                  content: const Text(
+                    'Seus dados pessoais e vencimentos são armazenados no seu dispositivo e sincronizados de forma segura com o Supabase. '
+                    'Você tem controle total sobre suas informações.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Entendi'),
+                    ),
+                  ],
                 ),
               );
             },
@@ -137,11 +125,11 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
             title: const Text(
-              'Resetar App (Dev)',
+              'Resetar App',
               style: TextStyle(color: Colors.redAccent),
             ),
             subtitle: Text(
-              'Limpar tudo e voltar à tela inicial',
+              'Limpar todos os dados e recomeçar',
               style: theme.textTheme.bodyMedium,
             ),
             trailing: const Icon(Icons.chevron_right, color: Colors.redAccent),

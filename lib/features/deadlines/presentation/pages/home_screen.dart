@@ -42,12 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final user = await userService.getUser(userId);
       
       // Se usuário foi deletado do Supabase, limpa dados e volta para criação
-      if (user == null && mounted) {
+      if (user == null) {
         await prefs.clear();
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/create_user',
-          (route) => false,
-        );
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/create_user',
+            (route) => false,
+          );
+        }
       }
     }
   }
@@ -65,12 +67,14 @@ class _HomeScreenState extends State<HomeScreen> {
       for (var deadline in list) {
         print('  - ${deadline.title} (${deadline.category}) - ${deadline.date}');
       }
+      if (!mounted) return;
       setState(() {
         _items = list;
         _isLoading = false;
       });
     } catch (e) {
       print('❌ Erro ao carregar prazos: $e');
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -105,10 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onAdd,
-        backgroundColor: AppColors.amber,
-        child: const Icon(Icons.add),
+      floatingActionButton: RepaintBoundary(
+        child: FloatingActionButton(
+          onPressed: _onAdd,
+          backgroundColor: AppColors.amber,
+          child: const Icon(Icons.add),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: _load,

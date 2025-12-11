@@ -8,6 +8,7 @@ import '../../../../core/domain/entities/user.dart' as app_user;
 import '../../domain/entities/deadline.dart';
 import '../../data/repositories/deadlines_sync_repository.dart';
 import '../../../../core/services/supabase_service.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -73,7 +74,9 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() => _imageFile = File(pickedFile.path));
         
         // Atualiza usuário com o caminho local da foto
-        // TODO: Upload real para Supabase Storage quando implementado
+        // NOTA: Upload no Supabase Storage requer configuração do bucket "user-photos"
+        // Para habilitar: criar bucket público no Supabase Dashboard > Storage
+        
         final updatedUser = _user!.copyWith(
           photoUrl: pickedFile.path,
         );
@@ -89,6 +92,47 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }
+        
+        /* CÓDIGO PARA UPLOAD NO SUPABASE STORAGE (quando configurado):
+        try {
+          final supabase = Supabase.instance.client;
+          final userId = _user!.id;
+          final fileExt = pickedFile.path.split('.').last;
+          final fileName = '$userId-${DateTime.now().millisecondsSinceEpoch}.$fileExt';
+          final filePath = '$userId/$fileName';
+          
+          await supabase.storage
+              .from('user-photos')
+              .upload(filePath, File(pickedFile.path));
+          
+          final photoUrl = supabase.storage
+              .from('user-photos')
+              .getPublicUrl(filePath);
+          
+          final updatedUser = _user!.copyWith(photoUrl: photoUrl);
+          await _userService.updateUser(updatedUser);
+          setState(() => _user = updatedUser);
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Foto atualizada no Supabase!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          print('❌ Erro no upload Supabase: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Erro ao fazer upload: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+        */
       }
     } catch (e) {
       if (mounted) {
@@ -137,7 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       
       // Atualiza o usuário removendo a foto
-      final updatedUser = _user!.copyWith(photoUrl: null);
+      final updatedUser = _user!.copyWith(clearPhoto: true);
       await _userService.updateUser(updatedUser);
       setState(() => _user = updatedUser);
       
@@ -224,13 +268,19 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {
-              // TODO: Navegar para tela de edição de perfil
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Edição de perfil em breve'),
-                ),
-              );
+            onPressed: () async {
+              if (_user != null) {
+                final result = await Navigator.push<app_user.User>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProfilePage(user: _user!),
+                  ),
+                );
+                
+                if (result != null && mounted) {
+                  setState(() => _user = result);
+                }
+              }
             },
           ),
         ],
@@ -253,7 +303,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: [AppColors.blue, AppColors.blue.withOpacity(0.6)],
+                          colors: [AppColors.blue, AppColors.blue.withValues(alpha: 0.6)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -270,19 +320,33 @@ class _ProfilePageState extends State<ProfilePage> {
                             )
                           : _user?.photoUrl != null
                               ? ClipOval(
-                                  child: Image.network(
-                                    _user!.photoUrl!,
-                                    fit: BoxFit.cover,
-                                    width: 120,
-                                    height: 120,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(
-                                        Icons.person,
-                                        size: 60,
-                                        color: Colors.white,
-                                      );
-                                    },
-                                  ),
+                                  child: _user!.photoUrl!.startsWith('http')
+                                      ? Image.network(
+                                          _user!.photoUrl!,
+                                          fit: BoxFit.cover,
+                                          width: 120,
+                                          height: 120,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return const Icon(
+                                              Icons.person,
+                                              size: 60,
+                                              color: Colors.white,
+                                            );
+                                          },
+                                        )
+                                      : Image.file(
+                                          File(_user!.photoUrl!),
+                                          fit: BoxFit.cover,
+                                          width: 120,
+                                          height: 120,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return const Icon(
+                                              Icons.person,
+                                              size: 60,
+                                              color: Colors.white,
+                                            );
+                                          },
+                                        ),
                                 )
                               : const Icon(
                                   Icons.person,
@@ -334,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     '${_user?.age ?? 0} anos',
                     style: TextStyle(
                       fontSize: 16,
-                      color: AppColors.onSlate.withOpacity(0.8),
+                      color: AppColors.onSlate.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -386,7 +450,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   '${_deadlines.length} total',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.onSlate.withOpacity(0.6),
+                    color: AppColors.onSlate.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -399,7 +463,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -407,13 +471,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     Icon(
                       Icons.event_note,
                       size: 48,
-                      color: AppColors.onSlate.withOpacity(0.3),
+                      color: AppColors.onSlate.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Nenhum lembrete cadastrado',
                       style: TextStyle(
-                        color: AppColors.onSlate.withOpacity(0.6),
+                        color: AppColors.onSlate.withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                     ),
@@ -441,15 +505,15 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              color.withOpacity(0.2),
-              color.withOpacity(0.1),
+              color.withValues(alpha: 0.2),
+              color.withValues(alpha: 0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -471,7 +535,7 @@ class _ProfilePageState extends State<ProfilePage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
-                color: AppColors.onSlate.withOpacity(0.7),
+                color: AppColors.onSlate.withValues(alpha: 0.7),
                 height: 1.2,
               ),
             ),
@@ -508,13 +572,13 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.1),
-            Colors.white.withOpacity(0.05),
+            Colors.white.withValues(alpha: 0.1),
+            Colors.white.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: urgencyColor.withOpacity(0.3),
+          color: urgencyColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -523,7 +587,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: urgencyColor.withOpacity(0.2),
+              color: urgencyColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -550,7 +614,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   deadline.category,
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.onSlate.withOpacity(0.7),
+                    color: AppColors.onSlate.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -559,7 +623,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: urgencyColor.withOpacity(0.2),
+              color: urgencyColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(

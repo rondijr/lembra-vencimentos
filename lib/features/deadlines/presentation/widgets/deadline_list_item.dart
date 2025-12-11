@@ -31,41 +31,38 @@ class DeadlineListItem extends StatelessWidget {
         categoryIcon = Icons.description;
     }
     
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isPast
-              ? [Colors.red.withOpacity(0.2), Colors.red.withOpacity(0.1)]
-              : isUrgent
-                  ? [AppColors.amber.withOpacity(0.2), AppColors.amber.withOpacity(0.1)]
-                  : [AppColors.blue.withOpacity(0.15), AppColors.blue.withOpacity(0.05)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
+    return RepaintBoundary(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
           color: isPast
-              ? Colors.red.withOpacity(0.5)
+              ? Colors.red.withValues(alpha: 0.15)
               : isUrgent
-                  ? AppColors.amber.withOpacity(0.5)
-                  : AppColors.blue.withOpacity(0.3),
-          width: 1.5,
+                  ? AppColors.amber.withValues(alpha: 0.15)
+                  : AppColors.blue.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isPast
+                ? Colors.red.withValues(alpha: 0.5)
+                : isUrgent
+                    ? AppColors.amber.withValues(alpha: 0.5)
+                    : AppColors.blue.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
           children: [
             // Ícone da categoria
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isPast
-                    ? Colors.red.withOpacity(0.2)
+                    ? Colors.red.withValues(alpha: 0.2)
                     : isUrgent
-                        ? AppColors.amber.withOpacity(0.2)
-                        : AppColors.blue.withOpacity(0.2),
+                        ? AppColors.amber.withValues(alpha: 0.2)
+                        : AppColors.blue.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -100,13 +97,13 @@ class DeadlineListItem extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           deadline.category,
                           style: TextStyle(
-                            color: AppColors.onSlate.withOpacity(0.9),
+                            color: AppColors.onSlate.withValues(alpha: 0.9),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -116,13 +113,13 @@ class DeadlineListItem extends StatelessWidget {
                       Icon(
                         Icons.calendar_today,
                         size: 14,
-                        color: AppColors.onSlate.withOpacity(0.6),
+                        color: AppColors.onSlate.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         dateStr,
                         style: TextStyle(
-                          color: AppColors.onSlate.withOpacity(0.7),
+                          color: AppColors.onSlate.withValues(alpha: 0.7),
                           fontSize: 14,
                         ),
                       ),
@@ -199,6 +196,7 @@ class DeadlineListItem extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

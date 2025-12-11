@@ -117,7 +117,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.blue.withOpacity(0.2),
+                    color: AppColors.blue.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -144,16 +144,16 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'Ex: RG de 2ª via',
-                  hintStyle: TextStyle(color: AppColors.onSlate.withOpacity(0.5)),
+                  hintStyle: TextStyle(color: AppColors.onSlate.withValues(alpha: 0.5)),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.1),
+                  fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -180,19 +180,19 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _category,
+                initialValue: _category,
                 dropdownColor: AppColors.slate,
                 style: const TextStyle(color: AppColors.onSlate, fontSize: 16),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.1),
+                  fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -252,16 +252,16 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.blue.withOpacity(0.2),
+                          color: AppColors.blue.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -287,7 +287,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                             Text(
                               DateFormat.EEEE('pt_BR').format(_selected),
                               style: TextStyle(
-                                color: AppColors.onSlate.withOpacity(0.6),
+                                color: AppColors.onSlate.withValues(alpha: 0.6),
                                 fontSize: 14,
                               ),
                             ),
@@ -313,7 +313,7 @@ class _AddDeadlinePageState extends State<AddDeadlinePage> {
                     backgroundColor: AppColors.blue,
                     foregroundColor: AppColors.onSlate,
                     elevation: 4,
-                    shadowColor: AppColors.blue.withOpacity(0.4),
+                    shadowColor: AppColors.blue.withValues(alpha: 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

@@ -83,21 +83,19 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 const SizedBox(height: 40),
                 
                 // Ícone de usuário
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.blue, AppColors.blue.withOpacity(0.6)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                RepaintBoundary(
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: const BoxDecoration(
+                      color: AppColors.blue, // Cor sólida ao invés de gradient para performance
+                      shape: BoxShape.circle,
                     ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.person_add_rounded,
-                    size: 60,
-                    color: Colors.white,
+                    child: const Icon(
+                      Icons.person_add_rounded,
+                      size: 60,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 
@@ -130,12 +128,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 // Campo de nome
                 Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.white.withOpacity(0.05),
-                      ],
-                    ),
+                    color: Colors.white.withValues(alpha: 0.08), // Cor sólida ao invés de gradient
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextFormField(
@@ -168,12 +161,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 // Campo de idade
                 Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.white.withOpacity(0.05),
-                      ],
-                    ),
+                    color: Colors.white.withValues(alpha: 0.08), // Cor sólida ao invés de gradient
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextFormField(
@@ -244,20 +232,20 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: AppColors.onSlate.withOpacity(0.3),
+                      color: AppColors.onSlate.withValues(alpha: 0.3),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.info_outline,
                         color: AppColors.blue,
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Você poderá adicionar uma foto depois nas configurações',

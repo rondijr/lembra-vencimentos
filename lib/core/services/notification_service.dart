@@ -65,7 +65,7 @@ class NotificationService {
         body,
         tz.TZDateTime.from(scheduledDate, tz.local),
         const NotificationDetails(android: androidDetails, iOS: darwinDetails, macOS: darwinDetails),
-        androidAllowWhileIdle: true,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: null,
       );

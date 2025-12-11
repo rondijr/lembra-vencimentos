@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.lembra_vencimentos"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
