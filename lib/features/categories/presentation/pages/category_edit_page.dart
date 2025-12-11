@@ -61,7 +61,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
     _nameController = TextEditingController(text: widget.category?.name ?? '');
     _subcategoryController = TextEditingController();
     _subcategories = List.from(widget.category?.subcategories ?? []);
-    _selectedIconCode = widget.category?.iconCode ?? Icons.category.codePoint;
+    _selectedIconCode = widget.category != null ? int.parse(widget.category!.iconCode) : Icons.category.codePoint;
     _selectedColorValue = widget.category?.colorValue ?? Colors.blue.value;
   }
 
@@ -86,8 +86,8 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
     try {
       final category = domain.Category(
         id: widget.category?.id ?? const Uuid().v4(),
-        name: _nameController.text.trim(),
-        iconCode: _selectedIconCode,
+        name: _nameController.text,
+        iconCode: _selectedIconCode.toString(),
         colorValue: _selectedColorValue,
         subcategories: _subcategories,
         createdAt: widget.category?.createdAt ?? DateTime.now(),

@@ -175,7 +175,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
-                              IconData(category.iconCode, fontFamily: 'MaterialIcons'),
+                              IconData(int.parse(category.iconCode), fontFamily: 'MaterialIcons'),
                               color: Color(category.colorValue),
                             ),
                           ),

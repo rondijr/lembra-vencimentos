@@ -39,7 +39,7 @@ class CategoryDetailDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    IconData(category.iconCode, fontFamily: 'MaterialIcons'),
+                    IconData(int.parse(category.iconCode), fontFamily: 'MaterialIcons'),
                     color: Color(category.colorValue),
                     size: 32,
                   ),
